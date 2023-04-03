@@ -7,6 +7,7 @@ import { StartButton } from '../components/StartButton';
 import { GetServerSideProps } from 'next';
 import { parseCookies, setCookie } from 'nookies';
 import styled from '@emotion/styled';
+import { EditableTitle } from '../components/EditableTitle';
 
 const WORK_DURATION = 25 * 60;
 const SHORT_BREAK_DURATION = 5 * 60;
@@ -19,9 +20,11 @@ const saveCountToCookie = (count: number) => {
   });
 };
 
-const getCountFromCookie = (cookies: any): number => {
+const getFromCookie = (cookies: any): { count: number; title: string } => {
   const count = parseInt(cookies.workCount, 10);
-  return isNaN(count) ? 0 : count;
+  const title = cookies.title ?? '';
+
+  return { count: isNaN(count) ? 0 : count, title };
 };
 
 const getBreakDuration = (workCount: number) => {
@@ -46,15 +49,15 @@ const Body = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 `;
 
 type HomeProps = {
   initialCount: number;
+  initialTitle: string;
 };
 
-const Home = ({ initialCount }: HomeProps) => {
+const Home = ({ initialCount, initialTitle }: HomeProps) => {
   const [isWorking, setIsWorking] = useState(true);
   const [hasStarted, setHasStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
@@ -117,6 +120,7 @@ const Home = ({ initialCount }: HomeProps) => {
 
   return (
     <Body>
+      <EditableTitle initialTitle={initialTitle} />
       <div
         css={{
           color: isWorking ? '#ff8a65' : '#69f0ae',
@@ -151,9 +155,10 @@ const Home = ({ initialCount }: HomeProps) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const cookies = parseCookies(ctx);
-  const initialCount = getCountFromCookie(cookies);
+  const { count, title } = getFromCookie(cookies);
+
   return {
-    props: { initialCount },
+    props: { initialCount: count, initialTitle: title },
   };
 };
 
