@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { parseCookies, setCookie } from 'nookies';
-import { useEffect, useState } from 'react';
+import { setCookie } from 'nookies';
+import { useState } from 'react';
 
 const Input = styled.textarea<{ isEditMode: boolean }>`
   flex: 1;
